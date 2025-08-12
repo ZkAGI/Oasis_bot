@@ -1,0 +1,14 @@
+services:
+  api:
+    image: docker.io/zkagi/rofl-node-api:0.1.0
+    platform: linux/amd64
+    environment:
+      - SIDECAR_URL=http://crypto:8081
+    ports:
+      - "8080"
+  crypto:
+    image: docker.io/zkagi/rofl-go-sidecar:0.1.0
+    platform: linux/amd64
+    environment:
+      - MASTER_KEY=${MASTER_KEY}   # injected by ROFL at runtime
+
