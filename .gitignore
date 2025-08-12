@@ -16,3 +16,29 @@ node_modules
 # Hardhat Ignition default folder for deployments against a local node
 ignition/deployments/chain-31337
 *.orc
+# secrets
+.env
+*.env
+
+# databases
+bot.db
+bot.db-*
+*.sqlite
+*.sqlite3
+
+# node / hardhat
+node_modules/
+artifacts/
+cache/
+typechain-types/
+
+# logs
+npm-debug.log*
+yarn-error.log*
+
+# misc
+.DS_Store
+.vscode/
+.idea/
+dist/
+build/
