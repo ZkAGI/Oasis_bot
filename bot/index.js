@@ -1,38 +1,64 @@
 // bot/index.js
 require('dotenv').config();
 const { Telegraf } = require('telegraf');
-const { ethers } = require('ethers');
+const { migrate } = require('./db');
+const { ensureUserWallet, getUser, setAllocation } = require('./wallets');
+const { backendName } = require('./roflClient');
 
-// Commands
-const deployCmd      = require('./commands/deploy');
-const addStrategyCmd = require('./commands/addStrategy');
-const statusCmd      = require('./commands/status');
-const historyCmd     = require('./commands/history');
-const setStateCmd = require('./commands/setState');
+// Your existing commands (keep paths as you have them)
+const deployCmd  = require('./commands/deploy');
+const addStrCmd  = require('./commands/addStrategy');
+const setState   = require('./commands/setState');
+const status     = require('./commands/status');
+const history    = require('./commands/history');
 
-function isAddr(x){ return x && ethers.utils.isAddress(x); }
-function logEnv(){
-  const envs = {
-    AGENT_REGISTRY_ADDRESS: process.env.AGENT_REGISTRY_ADDRESS,
-    STRATEGY_STORE_ADDRESS: process.env.STRATEGY_STORE_ADDRESS,
-    ENCRYPTED_PORTFOLIO_ADDRESS: process.env.ENCRYPTED_PORTFOLIO_ADDRESS,
-    STATE_VERIFIER_ADDRESS: process.env.STATE_VERIFIER_ADDRESS,
-  };
-  console.log('🔧 Using addresses:', envs);
-  for (const [k,v] of Object.entries(envs)) if (!isAddr(v)) console.warn(`⚠️ ${k} is missing/invalid`);
-}
-
-logEnv();
+migrate();
+console.log('Crypto backend:', backendName());
 
 const bot = new Telegraf(process.env.BOT_TOKEN);
 
-bot.start((ctx) => ctx.reply('👋 Welcome! Use /deploy <metaURI|JSON> to create an agent.'));
-bot.command('deploy', deployCmd);
-bot.command('addStrategy', addStrategyCmd);
-bot.command('status', statusCmd);
-bot.command('history', historyCmd);
-bot.command('setState', setStateCmd);
+// Auto-create encrypted wallet for any user touching the bot
+bot.use(async (ctx, next) => {
+  if (ctx?.from?.id) await ensureUserWallet(ctx.from.id);
+  return next();
+});
+
+bot.start(async (ctx) => {
+  const u = getUser(ctx.from.id);
+  await ctx.reply(
+    `👋 Welcome!\n` +
+    `• Wallet: ${u.addr}\n` +
+    `• Allocation: ${u.alloc_pct}% (set with /alloc <percent>)\n` +
+    `Use: /deploy, /addStrategy, /setState, /status, /history`
+  );
+});
+
+// Keep existing command names
+bot.command('deploy',     deployCmd);
+bot.command('addStrategy', addStrCmd);
+bot.command('setState',   setState);
+bot.command('status',     status);
+bot.command('history',    history);
+
+// Small helper /wallet (address only; never shows key)
+bot.command('wallet', (ctx) => {
+  const u = getUser(ctx.from.id);
+  ctx.reply(`🔐 Wallet address: ${u.addr}`);
+});
+
+// Risk gate you asked for (keeps same pattern)
+bot.command('alloc', (ctx) => {
+  const m = ctx.message.text.match(/^\/alloc\s+(\d{1,3})$/);
+  if (!m) return ctx.reply('Usage: /alloc <percent 0-100>');
+  const pct = parseInt(m[1], 10);
+  setAllocation(ctx.from.id, pct);
+  ctx.reply(`✅ Allocation set to ${pct}%`);
+});
 
 bot.launch()
-  .then(() => console.log('🤖 Bot is live!'))
+  .then(() => console.log('🤖 Bot is live'))
   .catch(console.error);
+
+process.once('SIGINT', () => bot.stop('SIGINT'));
+process.once('SIGTERM', () => bot.stop('SIGTERM'));
+
