@@ -4,6 +4,8 @@ const { Telegraf } = require('telegraf');
 const { migrate } = require('./db');
 const { ensureUserWallet, getUser, setAllocation } = require('./wallets');
 const { backendName } = require('./roflClient');
+const { startWorker } = require('./worker');
+const portfolio  = require('./commands/portfolio');
 
 // Your existing commands (keep paths as you have them)
 const deployCmd  = require('./commands/deploy');
@@ -39,6 +41,7 @@ bot.command('addStrategy', addStrCmd);
 bot.command('setState',   setState);
 bot.command('status',     status);
 bot.command('history',    history);
+bot.command('portfolio',  portfolio);
 
 // Small helper /wallet (address only; never shows key)
 bot.command('wallet', (ctx) => {
@@ -59,6 +62,7 @@ bot.launch()
   .then(() => console.log('🤖 Bot is live'))
   .catch(console.error);
 
+startWorker();
 process.once('SIGINT', () => bot.stop('SIGINT'));
 process.once('SIGTERM', () => bot.stop('SIGTERM'));
 
