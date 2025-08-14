@@ -1,6 +1,4 @@
-# Oasis ROFL Telegram Bot — Quick README
-
-A compact guide for your current setup (with **History removed**).
+# Oasis ROFL Telegram Bot 
 
 ---
 
