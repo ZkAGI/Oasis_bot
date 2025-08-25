@@ -1,14 +1,29 @@
 services:
   api:
-    image: docker.io/zkagi/rofl-node-api:0.1.0
+    image: docker.io/zkagi/rofl-node-api:0.1.3
     platform: linux/amd64
     environment:
-      - SIDECAR_URL=http://crypto:8081
+      SIDECAR_URL: http://crypto:8081
+      PORT: "8080"
     ports:
-      - "8080"
+      - target: 8080        # container port
+        published: 8080     # tells ROFL proxy to expose as p8080.<domain>
+        protocol: tcp
+    depends_on:
+      - crypto
+    # Make sure proxy only flips live when the API is answering
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://127.0.0.1:8080/health', r=>process.exit(r.statusCode===200?0:1)).on('error',()=>process.exit(1))"]
+      interval: 5s
+      timeout: 3s
+      retries: 12
+      start_period: 5s
+
   crypto:
     image: docker.io/zkagi/rofl-go-sidecar:0.1.0
     platform: linux/amd64
     environment:
-      - MASTER_KEY=${MASTER_KEY}   # injected by ROFL at runtime
+      MASTER_KEY: ${MASTER_KEY}     # injected by ROFL at runtime
+    expose:
+      - "8081"                      # only internal to the app VM
 
