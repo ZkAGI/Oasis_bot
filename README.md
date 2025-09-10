@@ -1,5 +1,4 @@
 
-
 # Pawpad Oasis Telegram Bot
 
 This project combines:
@@ -62,6 +61,10 @@ Example `.env`:
 # Telegram
 BOT_TOKEN=123456789:ABCdefGhIJklmnOPQrstuVwXyZ
 
+# -------- ROFL Gateway (your deployed ROFL app) --------
+ROFL_GATEWAY_URL=
+ROFL_APP_ID=
+
 # Oasis
 RPC_URL=https://testnet.sapphire.oasis.dev
 PRIVATE_KEY=0xYOUR_DEPLOYER_PRIVATE_KEY
@@ -69,12 +72,10 @@ AGENT_REGISTRY_ADDRESS=0x...
 STRATEGY_STORE_ADDRESS=0x...
 
 # Signal feed
+# -------- Forecast API --------
+FORECAST_API_URL=
 ZKAGI_API_KEY=
 
-# Hyperliquid
-HL_ADDRESS=0xYourApiWallet
-HL_SECRET=0xYourPrivateKey
-HL_MAIN_ADDRESS=0xYourMainWallet
 ```
 
 > When users connect through Telegram, HL secrets are encrypted with ROFL and stored in MongoDB.
@@ -138,4 +139,5 @@ The bot prints:
 ---
 
 ⚡ You now have a **TEE-backed Telegram trading agent** integrated with Hyperliquid and Oasis Sapphire.
+
 
