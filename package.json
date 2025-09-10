@@ -1,0 +1,11 @@
+{
+  "dependencies": {
+    "ethers": "^5.8.0",
+    "express": "^5.1.0",
+    "hyperliquid": "^1.7.7",
+    "mongodb": "^6.19.0",
+    "node-fetch": "^2.7.0",
+    "secp256k1": "^5.0.1",
+    "telegraf": "^4.16.3"
+  }
+}
