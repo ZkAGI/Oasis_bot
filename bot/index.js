@@ -222,11 +222,6 @@ if (!process.env.BOT_TOKEN) {
 const bot = new Telegraf(process.env.BOT_TOKEN);
 bot.use(session());
 
-// basic log
-bot.use(async (ctx, next) => {
-  if (ctx.message?.text) console.log('> text:', JSON.stringify(ctx.message.text));
-  return next();
-});
 
 // helpers
 function setStage(ctx, stage) {
