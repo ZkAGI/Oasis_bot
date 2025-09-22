@@ -19,7 +19,7 @@ node_modules/
 *.sh
 
 # Scripts folder (if not needed in repo)
-scripts/
+#scripts/
 
 # OS-specific junk
 .DS_Store

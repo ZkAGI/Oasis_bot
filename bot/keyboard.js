@@ -45,8 +45,8 @@
 function setupKeyboard() {
   return {
     keyboard: [
-      [{ text: '🧭 Onboard / Start' }],
-      [{ text: '🔗 Connect HL' }],
+      [{ text: '🧭 Start' }],
+      [{ text: '🔗 Connect HyperLiquid API' }],
       [{ text: '🎰 Spin the Wheel' }],
     ],
     resize_keyboard: true,

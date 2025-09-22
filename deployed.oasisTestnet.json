@@ -1,0 +1,9 @@
+{
+  "chainId": 23295,
+  "deployer": "0xd83e7865C827dbd2DC3B3225e61cA01b8652d8E3",
+  "admin": "0xd83e7865C827dbd2DC3B3225e61cA01b8652d8E3",
+  "AgentRegistry": "0xBd66eE60Ad9ef87beE0687ca38c76961D19b3357",
+  "StrategyStore": "0xa9CD6592baBCadFc2379eB8BC1Ba5927348c69B6",
+  "EncryptedPortfolio": "0x72D0e0C7b8283C66b2835E86ed499afcC24A683e",
+  "MANAGER_ROLE": "0x241ecf16d79d0f8dbfb92cbc07fe17840425976cf0667f022fe9877caa831b08"
+}

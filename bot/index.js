@@ -273,7 +273,7 @@ bot.start(async (ctx) => {
 });
 
 // Also handle the “Onboard / Start” keyboard button
-bot.hears(/^🧭 Onboard \/ Start$/, async (ctx) => {
+bot.hears(/^🧭 Start$/, async (ctx) => {
   try {
     await Promise.resolve(startCmd(ctx)).catch(() => {});
     const connected = await connectHl.isConnected(ctx.from.id).catch(() => false);
@@ -290,7 +290,7 @@ bot.hears(/^🧭 Onboard \/ Start$/, async (ctx) => {
 });
 
 /* ---------------------------- SETUP ACTIONS ----------------------------- */
-bot.hears(/^🔗 Connect HL$/, (ctx) => connectHl.prompt(ctx));
+bot.hears(/^🔗 Connect HyperLiquid API$/, (ctx) => connectHl.prompt(ctx));
 
 /* --------------------------- TRADING ACTIONS ---------------------------- */
 bot.hears(/^📊 Portfolio$/, (ctx) => portfolioCmd(ctx));
