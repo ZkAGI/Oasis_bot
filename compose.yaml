@@ -39,8 +39,6 @@ services:
     build:
       context: .
       dockerfile: bot/Dockerfile
-    # Option B: if you published an image already, replace build: with:
-    # image: docker.io/zkagi/oasis-telegram-bot:latest
     platform: linux/amd64
     depends_on:
       - api
@@ -50,7 +48,7 @@ services:
       - BOT_TOKEN=${BOT_TOKEN}
 
       # ROFL gateway inside enclave
-      - ROFL_GATEWAY_URL=http://api:8080
+      - ROFL_GATEWAY_URL=${ROFL_GATEWAY_URL}
       - ROFL_APP_ID=${ROFL_APP_ID}
 
       # Oasis / contracts
@@ -60,13 +58,11 @@ services:
       - STRATEGY_STORE_ADDRESS=${STRATEGY_STORE_ADDRESS}
       - ENCRYPTED_PORTFOLIO_ADDRESS=${ENCRYPTED_PORTFOLIO_ADDRESS}
 
-      # DB + signal feed
-      - MONGO_URL=${MONGO_URL}
       - ZKAGI_API_KEY=${ZKAGI_API_KEY}
 
       # Bot runtime knobs (optional)
-      - SAVE_STRATEGY_ONCHAIN=${SAVE_STRATEGY_ONCHAIN:-false}
-      - SAVE_PORTFOLIO_ONCHAIN=${SAVE_PORTFOLIO_ONCHAIN:-false}
+      - SAVE_STRATEGY_ONCHAIN=${SAVE_STRATEGY_ONCHAIN:-true}
+      - SAVE_PORTFOLIO_ONCHAIN=${SAVE_PORTFOLIO_ONCHAIN:-true}
       - AUTO_TRADE_INTERVAL_MIN=${AUTO_TRADE_INTERVAL_MIN:-30}
 
       # If your code checks NODE_ENV
