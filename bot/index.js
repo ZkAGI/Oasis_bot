@@ -325,7 +325,7 @@ bot.on('text', async (ctx) => {
   if (usedHL) {
     if (ctx.session?.hlConnected) {
       setStage(ctx, 'trading');
-      return sendTrading(ctx, '✅ Hyperliquid connected. Choose an action below.');
+      return sendTrading(ctx);
     }
     return;
   }

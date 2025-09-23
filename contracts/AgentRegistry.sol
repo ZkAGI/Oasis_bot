@@ -3,7 +3,6 @@ pragma solidity ^0.8.28;
 
 import "@openzeppelin/contracts/access/AccessControl.sol";
 
-/// @title Agent Registry for zkAGI M1
 /// @notice Registers agents and their metadata; owner is explicit and can differ from MANAGER
 /// @dev MANAGER can create agents; updates allowed by agent owner or MANAGER
 contract AgentRegistry is AccessControl {
