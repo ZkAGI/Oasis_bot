@@ -1,29 +1,75 @@
 services:
+  # ROFL Gateway (Node API)
   api:
     image: docker.io/zkagi/rofl-node-api:latest
     platform: linux/amd64
     environment:
       SIDECAR_URL: http://crypto:8081
       PORT: "8080"
+      # If your gateway uses ROFL_APP_ID/MASTER_KEY, you can pass them too:
+      # ROFL_APP_ID: ${ROFL_APP_ID}
+      # MASTER_KEY:  ${MASTER_KEY}
     ports:
-      - target: 8080        # container port
-        published: "8080"     # tells ROFL proxy to expose as p8080.<domain>
+      - target: 8080          # container port
+        published: "8080"     # ROFL proxy exposes internally as p8080.<domain>
         protocol: tcp
     depends_on:
       - crypto
-    # Make sure proxy only flips live when the API is answering
     healthcheck:
       test: ["CMD", "node", "-e", "require('http').get('http://127.0.0.1:8080/health', r=>process.exit(r.statusCode===200?0:1)).on('error',()=>process.exit(1))"]
       interval: 5s
       timeout: 3s
       retries: 12
       start_period: 5s
+    restart: unless-stopped
 
+  # ROFL crypto sidecar (Go)
   crypto:
     image: docker.io/zkagi/rofl-go-sidecar:0.1.0
     platform: linux/amd64
     environment:
-      MASTER_KEY: ${MASTER_KEY}     # injected by ROFL at runtime
+      MASTER_KEY: ${MASTER_KEY}   # injected by ROFL from secrets
     expose:
-      - "8081"                      # only internal to the app VM
+      - "8081"                    # internal only
+    restart: unless-stopped
+
+  # Telegram Bot (Node 18)
+  bot:
+    # Option A (recommended): build from your repo using bot/Dockerfile
+    build:
+      context: .
+      dockerfile: bot/Dockerfile
+    # Option B: if you published an image already, replace build: with:
+    # image: docker.io/zkagi/oasis-telegram-bot:latest
+    platform: linux/amd64
+    depends_on:
+      - api
+      - crypto
+    environment:
+      # Telegram
+      - BOT_TOKEN=${BOT_TOKEN}
+
+      # ROFL gateway inside enclave
+      - ROFL_GATEWAY_URL=http://api:8080
+      - ROFL_APP_ID=${ROFL_APP_ID}
+
+      # Oasis / contracts
+      - RPC_URL=${RPC_URL}
+      - PRIVATE_KEY=${PRIVATE_KEY}
+      - AGENT_REGISTRY_ADDRESS=${AGENT_REGISTRY_ADDRESS}
+      - STRATEGY_STORE_ADDRESS=${STRATEGY_STORE_ADDRESS}
+      - ENCRYPTED_PORTFOLIO_ADDRESS=${ENCRYPTED_PORTFOLIO_ADDRESS}
+
+      # DB + signal feed
+      - MONGO_URL=${MONGO_URL}
+      - ZKAGI_API_KEY=${ZKAGI_API_KEY}
+
+      # Bot runtime knobs (optional)
+      - SAVE_STRATEGY_ONCHAIN=${SAVE_STRATEGY_ONCHAIN:-false}
+      - SAVE_PORTFOLIO_ONCHAIN=${SAVE_PORTFOLIO_ONCHAIN:-false}
+      - AUTO_TRADE_INTERVAL_MIN=${AUTO_TRADE_INTERVAL_MIN:-30}
+
+      # If your code checks NODE_ENV
+      - NODE_ENV=production
+    restart: unless-stopped
 
